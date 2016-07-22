@@ -30,6 +30,8 @@
     [bgView addGestureRecognizer:tap];
     [self.view addSubview:bgView];
     
+    //SourceTree Test
+    
 }
 /**
  *  @author hhsx, 16-07-10 15:40:41
