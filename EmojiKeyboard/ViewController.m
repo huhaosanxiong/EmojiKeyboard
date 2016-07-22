@@ -74,8 +74,7 @@
         NSRange range = NSMakeRange(0, labelAttributed.length);
         NSDictionary *dic = [labelAttributed attributesAtIndex:0 effectiveRange:&range];
         
-        CGSize textMaxSize =  CGSizeMake(MAXWIDTH-20*2, MAXFLOAT);
-        CGSize textRealSize = [text boundingRectWithSize:textMaxSize options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
+        CGSize textRealSize = [self getStringRectInTextView:text AndAttributedString:dic InTextView:self.textView];
         
         self.textView.frame = CGRectMake(20, 86, MAXWIDTH-20*2, textRealSize.height);
     };
@@ -93,7 +92,36 @@
     };
 }
 
-
+- (CGSize)getStringRectInTextView:(NSString *)string AndAttributedString:(NSDictionary *)dic InTextView:(UITextView*)textView
+{
+    
+    //实际textView显示时我们设定的宽
+    CGFloat contentWidth = CGRectGetWidth(textView.frame);
+    //但事实上内容需要除去显示的边框值
+    CGFloat broadWith    = (textView.contentInset.left + textView.contentInset.right
+                            + textView.textContainerInset.left
+                            + textView.textContainerInset.right
+                            + textView.textContainer.lineFragmentPadding/*左边距*/
+                            + textView.textContainer.lineFragmentPadding/*右边距*/);
+    
+    CGFloat broadHeight  = (textView.contentInset.top
+                            + textView.contentInset.bottom
+                            + textView.textContainerInset.top
+                            + textView.textContainerInset.bottom);
+    
+    //由于求的是普通字符串产生的Rect来适应textView的宽
+    contentWidth -= broadWith;
+    
+    CGSize InSize = CGSizeMake(contentWidth, MAXFLOAT);
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = textView.textContainer.lineBreakMode;
+//    NSDictionary *dic = @{NSFontAttributeName:textView.font, NSParagraphStyleAttributeName:[paragraphStyle copy]};
+    
+    CGSize calculatedSize =  [string boundingRectWithSize:InSize options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size;
+    
+    CGSize adjustedSize = CGSizeMake(ceilf(calculatedSize.width),calculatedSize.height + broadHeight);//ceilf(calculatedSize.height)
+    return adjustedSize;
+}
 
 
 - (ChatBarVC *)footVc{

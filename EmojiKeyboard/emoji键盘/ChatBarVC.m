@@ -284,9 +284,6 @@
     
     CGSize adjustedSize = CGSizeMake(ceilf(calculatedSize.width),calculatedSize.height + broadHeight);//ceilf(calculatedSize.height)
     return adjustedSize;
-    
-    
-    
 }
 -(void)faceClick:(NSString *)faceName andFaceNumber:(NSInteger)number
 {
